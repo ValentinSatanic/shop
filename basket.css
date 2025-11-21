@@ -1,0 +1,37 @@
+body{font-family:Arial;margin:0;padding:0}
+header{background:#222;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.logo {font-size:35px}
+.container{padding:20px}
+.cart-list{max-width:900px;margin:0 auto}
+.cart-item{display:flex;gap:12px;align-items:center;border:1px solid #e0e0e0;padding:12px;border-radius:8px;margin-bottom:10px}
+.cart-item img{width:100px;height:80px;object-fit:cover;border-radius:6px}
+.cart-item .meta{flex:1}
+.cart-actions{display:flex;gap:8px;align-items:center}
+.empty{text-align:center;color:#666;padding:40px}
+.back{background:#222;color:#ffffff;}
+.remove{background:#ff4d4f;color:#fff}
+.clear{background:#ffbb10;color:#fff}
+.checkout{background:#27ae60;color:#fff}
+button {
+  /* Применение градиента */
+  background: linear-gradient(to bottom, #000000, #1c2833);
+  
+  /* Базовые стили */
+  padding: 12px 25px;
+  border: none;
+  border-radius: 5px;
+  color: #EAEAEA; /* Светлый, но не чисто белый текст */
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 1s ease;
+
+  /* Элегантная тень */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+button:hover {
+  /* При наведении делаем градиент более ярким или меняем направление */
+  background: linear-gradient(135deg, #222 0%, #434343 70%, #616161 100%);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  transform: translateY(-1px);
+}

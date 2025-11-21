@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>Корзина — Simple Shop</title>
+  <link rel="stylesheet" href="basket.css">
+</head>
+<body>
+  <header>
+    <div class="logo">SHOP</div>
+    <div>
+      <span id="username"></span>
+      <button id="homeBtn" class="back">Каталог</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2>Ваша корзина</h2>
+    <div class="cart-list" id="cartList"></div>
+    <div style="max-width:900px;margin:14px auto 0;display:flex;justify-content:space-between;align-items:center">
+      <div id="summary"></div>
+      <div>
+        <button id="clearBtn" class="clear">Очистить корзину</button>
+        <button id="checkoutBtn" class="checkout">Оформить заказ</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function loadUser(){
+      const user = JSON.parse(localStorage.getItem('user'));
+      const el = document.getElementById('username');
+      if(user) el.textContent = '👤 ' + user.username;
+      else el.textContent = '';
+    }
+
+    function renderCart(){
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const list = document.getElementById('cartList');
+      list.innerHTML = '';
+
+      if(!cart.length){
+        list.innerHTML = '<div class="empty">Корзина пуста</div>';
+        document.getElementById('summary').textContent = '';
+        return;
+      }
+
+      let total = 0;
+      cart.forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        const price = Number(item.price || 0);
+        total += price;
+
+        row.innerHTML = `
+          <img src="${item.thumbnail || ''}" alt="">
+          <div class="meta">
+            <div style="font-weight:600">${item.title || 'Без названия'}</div>
+            <div style="color:#666;margin-top:6px">${item.description ? item.description.substring(0,100) : ''}</div>
+            <div style="margin-top:8px">Цена: <b>${price}$</b></div>
+          </div>
+          <div class="cart-actions">
+            <button class="remove" data-idx="${idx}">Удалить</button>
+          </div>
+        `;
+
+        list.appendChild(row);
+      });
+
+      document.getElementById('summary').innerHTML = '<b>Итого: ' + total + '$</b>';
+
+      // attach listeners
+      document.querySelectorAll('.remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = Number(e.target.dataset.idx);
+          removeFromCart(idx);
+        });
+      });
+    }
+
+    function removeFromCart(index){
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.splice(index,1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      if(!confirm('Очистить корзину?')) return;
+      localStorage.setItem('cart', JSON.stringify([]));
+      renderCart();
+    });
+
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if(!user) return alert('Пожалуйста, авторизуйтесь, чтобы оформить заказ.');
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      if(!cart.length) return alert('Корзина пуста.');
+
+      // Простая заглушка для оформления
+      alert('Заказ оформлен для ' + user.username + '. Товаров: ' + cart.length);
+      localStorage.setItem('cart', JSON.stringify([]));
+      renderCart();
+    });
+
+    document.getElementById('homeBtn').addEventListener('click', () => {
+      location.href = 'index.html';
+    });
+
+    // init
+    loadUser();
+    renderCart();
+  </script>
+</body>
+</html>

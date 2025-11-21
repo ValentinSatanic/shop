@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Shop</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">SHOP</div>
+    <div>
+        <span id="username"></span>
+        <button id="loginBtn">Войти</button>
+        <button id="cartBtn">Корзина</button>
+    </div>
+</header>
+
+<div class="container">
+    <input class="search-bar" id="search" placeholder="Поиск товаров...">
+    <div class="products" id="products"></div>
+    <div class="pagination" id="pagination"></div>
+</div>
+
+<!-- Product Modal -->
+<div id="modal">
+    <div class="modal-content">
+        <h3 id="mTitle"></h3>
+        <img id="mImg" style="width:100%;border-radius:4px;">
+        <p id="mDesc"></p>
+        <p><b id="mPrice"></b></p>
+        <button id="addToCartBtn">Добавить в корзину</button>
+        <button onclick="closeModal()">Закрыть</button>
+    </div>
+</div>
+
+<!-- Auth Modal -->
+<div id="authModal">
+    <div class="modal-content">
+        <h3>Авторизация</h3>
+        <input id="usernameInput" placeholder="Username" style="width:100%;padding:8px;"><br><br>
+        <input id="passwordInput" type="password" placeholder="Password" style="width:100%;padding:8px;"><br><br>
+        <button id="authSubmit">Войти</button>
+        <button onclick="closeAuth()">Закрыть</button>
+    </div>
+</div>
+
+<script>
+// ---------- STATE ----------
+let currentPage = 1;
+let searchQuery = "";
+let selectedProduct = null;
+
+// ---------- AUTH ----------
+function loadUser() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const usernameEl = document.getElementById("username");
+    const loginBtn = document.getElementById("loginBtn");
+
+    if (user) {
+        usernameEl.textContent = "👤 " + user.username;
+        loginBtn.textContent = "Выйти";
+    } else {
+        usernameEl.textContent = "";
+        loginBtn.textContent = "Войти";
+    }
+}
+
+document.getElementById("loginBtn").onclick = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+        localStorage.removeItem("user");
+        loadUser();
+    } else {
+        document.getElementById("authModal").style.display = "flex";
+    }
+};
+
+document.getElementById("authSubmit").onclick = () => {
+    const username = document.getElementById("usernameInput").value;
+    const pass = document.getElementById("passwordInput").value;
+    if (!username || !pass) return alert("Введите данные!");
+
+    localStorage.setItem("user", JSON.stringify({ username }));
+    closeAuth();
+    loadUser();
+};
+
+function closeAuth(){ document.getElementById("authModal").style.display = "none"; }
+
+// ---------- FETCH PRODUCTS ----------
+async function loadProducts() {
+    let url = `https://dummyjson.com/products?limit=8&skip=${(currentPage-1)*8}`;
+    if (searchQuery.length > 0) {
+        url = `https://dummyjson.com/products/search?q=${searchQuery}`;
+    }
+
+    const res = await fetch(url);
+    const data = await res.json();
+    renderProducts(data.products);
+}
+
+function renderProducts(products) {
+    const container = document.getElementById("products");
+    container.innerHTML = "";
+
+    products.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML = `
+            <img src="${p.thumbnail}" style="width:100%;height:150px;object-fit:cover;border-radius:4px;">
+            <h4>${p.title}</h4>
+            <p>${p.price}$</p>
+        `;
+        div.onclick = () => openProduct(p);
+        container.appendChild(div);
+    });
+}
+
+function renderPagination() {
+    const pag = document.getElementById("pagination");
+    pag.innerHTML = `
+        <button onclick="prevPage()">Назад</button>
+        <span>Страница ${currentPage}</span>
+        <button onclick="nextPage()">Вперед</button>
+    `;
+}
+
+function nextPage(){ currentPage++; loadProducts(); renderPagination(); }
+function prevPage(){ if(currentPage>1){ currentPage--; loadProducts(); renderPagination(); } }
+
+// ---------- SEARCH ----------
+document.getElementById("search").oninput = (e) => {
+    searchQuery = e.target.value.trim();
+    loadProducts();
+};
+
+// ---------- PRODUCT MODAL ----------
+function openProduct(p) {
+    selectedProduct = p;
+    document.getElementById("mTitle").textContent = p.title;
+    document.getElementById("mImg").src = p.thumbnail;
+    document.getElementById("mDesc").textContent = p.description;
+    document.getElementById("mPrice").textContent = p.price + "$";
+    document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+// ---------- CART ----------
+document.getElementById("addToCartBtn").onclick = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return alert("Только для авторизованных!");
+
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    cart.push(selectedProduct);
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    alert("Добавлено в корзину!");
+};
+
+// переход на страницу корзины
+document.getElementById("cartBtn").onclick = () => {
+    location.href = "basket.html";
+};
+
+// ---------- INIT ----------
+loadUser();
+loadProducts();
+renderPagination();
+</script>
+
+</body>
+</html>

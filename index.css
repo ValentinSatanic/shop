@@ -1,0 +1,34 @@
+body { font-family: Arial; margin: 0; padding: 0; }
+header { background:#222;color:#fff;padding:15px;display:flex;justify-content:space-between; }
+.logo {font-size:35px}
+.container { padding: 20px; }
+.search-bar {width:98%; padding:10px; border-radius: 20px; }
+.products { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 20px; padding-top:20px; }
+.product { border:1px solid #ddd;padding:10px;border-radius:5px;cursor:pointer; }
+.pagination button { margin: 20px; }
+#modal, #authModal { position: fixed; top:0; left:0; width:100%; height:100%; 
+                    background: rgba(0,0,0,.6); display:none; align-items:center; justify-content:center;}
+.modal-content { background:#fff; padding:20px; width:300px; border-radius:6px; }
+button {
+  /* Применение градиента */
+  background:#222;
+  
+  /* Базовые стили */
+  padding: 12px 25px;
+  border: none;
+  border-radius: 5px;
+  color: #EAEAEA; /* Светлый, но не чисто белый текст */
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  /* Элегантная тень */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+button:hover {
+  /* При наведении делаем градиент более ярким или меняем направление */
+  background: linear-gradient(135deg, #222 0%, #434343 70%, #616161 100%);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  transform: translateY(-1px);
+}
